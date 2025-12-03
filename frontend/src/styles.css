@@ -1,0 +1,834 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Remove border-radius globally as requested (all elements squared) */
+* {
+  border-radius: 0 !important;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f5f7fb;
+  color: #111827;
+}
+
+.app-header {
+  background: #111827;
+  color: #f9fafb;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.app-header nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.app-header a {
+  color: #e5e7eb;
+  text-decoration: none;
+}
+
+.app-header a.router-link-active {
+  color: #60a5fa;
+}
+
+.link-button {
+  background: transparent;
+  border: none;
+  color: #e5e7eb;
+  cursor: pointer;
+  padding: 0;
+}
+
+.app-main {
+  padding: 1.5rem 2rem;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08);
+}
+
+.form-group {
+  margin-bottom: 0.9rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.45rem 0.6rem;
+  border-radius: 0.4rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+/* Button base styles (normalized) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  border-radius: 0; /* no rounding for all buttons */
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: inherit;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background: #6b7280;
+  color: #ffffff;
+}
+
+/* ===== Home hero specific adjustments =====
+   Keep global styles intact; apply no-rounded corners and improved
+   contrast only for the hero/banner area so other UI keeps its design. */
+
+.home-hero {
+  /* ensure hero occupies 50vh and crops nicely */
+  height: 50vh;
+  min-height: 320px;
+  display: grid;
+  grid-template-columns: minmax(0, 2.5fr) minmax(0, 1.5fr);
+  gap: 1.5rem;
+  align-items: center;
+  position: relative;
+  padding: 20px;
+  overflow: hidden;
+  background-image: url("https://duhocthanhcong.vn/wp-content/uploads/school-photos/Harvard%20University/Harvard-University-Album1.jpeg");
+  background-size: cover;
+  background-position: center;
+  border-radius: 0; /* no rounded corners on hero */
+}
+
+/* Make hero full-bleed (edge-to-edge) while keeping inner grid centered */
+.home-hero {
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+.home-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55), rgba(255,255,255,0.0));
+  pointer-events: none;
+}
+
+.home-hero-text,
+.home-hero-visual {
+  position: relative;
+  z-index: 2; /* above overlay */
+}
+
+.home-hero-text h2,
+.home-hero-text p,
+.home-badge {
+  color: #ffffff; /* ensure contrast against image */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+}
+
+.home-subtitle {
+  color: #f3f4f6;
+}
+
+.home-search {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.home-search input {
+  flex: 1;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.95);
+  color: #111827;
+  border-radius: 0; /* no rounding */
+}
+
+.home-search .btn {
+  padding: 0.75rem 1rem;
+  border-radius: 0;
+}
+
+.home-hero-stat {
+  background: rgba(0,0,0,0.6);
+  color: #ffffff;
+  border-radius: 0;
+}
+
+@media (max-width: 900px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+    padding: 1.25rem;
+    background-position: center 30%;
+  }
+
+  .home-hero::before {
+    background: linear-gradient(to bottom, rgba(0,0,0,0.45), rgba(0,0,0,0.2));
+  }
+}
+
+/* End hero-specific adjustments */
+
+/* Borrow history styles */
+.borrow-history {
+  padding: 1rem;
+}
+
+.borrow-history h2 {
+  margin: 0 0 0.5rem;
+}
+
+.borrow-history .description {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.borrow-history .table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(15,23,42,0.06);
+}
+
+.borrow-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.borrow-table {
+  min-width: 720px; /* ensure columns align and remain readable */
+  width: 100%;
+  table-layout: fixed; /* enforce column widths */
+}
+
+.borrow-table th {
+  position: sticky;
+  top: 0;
+  background: #f3f4f6;
+  z-index: 5;
+  font-weight: 600;
+}
+
+.borrow-table th:nth-child(1) { width: 40%; }
+.borrow-table th:nth-child(2) { width: 15%; }
+.borrow-table th:nth-child(3) { width: 15%; }
+.borrow-table th:nth-child(4) { width: 15%; }
+.borrow-table th:nth-child(5) { width: 15%; }
+
+.borrow-table td {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.borrow-history tbody tr:hover {
+  background: #f8fafc;
+}
+
+.borrow-history thead tr {
+  background: #f3f4f6;
+}
+
+/* Generic table rules to ensure history and profile tables are full-width and aligned */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 0.85rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 0.95rem;
+}
+
+.table thead tr {
+  background: #f3f4f6;
+}
+
+.table tbody tr:nth-child(even) {
+  background: #fbfdff;
+}
+
+/* Badges (status chips) */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-warning {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.borrow-history th,
+.borrow-history td {
+  padding: 0.75rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 0.95rem;
+}
+
+.borrow-history tbody tr:nth-child(even) {
+  background: #fbfdff;
+}
+
+.borrow-history .badge {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.borrow-empty {
+  color: #6b7280;
+}
+
+
+.home-hero-stat {
+  background: rgba(15, 23, 42, 0.85);
+  color: #e5e7eb;
+}
+
+.home-stat-label {
+  font-size: 0.8rem;
+  margin: 0 0 0.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.home-stat-value {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.home-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.home-section-header h3 {
+  margin: 0;
+}
+
+.home-section-header p {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.home-books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Horizontal filters for Book Catalog */
+.filters-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.filters-row .form-group {
+  margin-bottom: 0;
+}
+.filters-row .filters-search input {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+}
+.filters-row .filters-genre select {
+  min-width: 180px;
+  padding: 0.45rem 0.6rem;
+}
+
+@media (max-width: 720px) {
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filters-row .filters-genre select {
+    width: 100%;
+  }
+}
+
+/* Search suggestions dropdown */
+.search-suggestions {
+  position: absolute;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+  border: 1px solid #eef2f7;
+  margin-top: 0.5rem;
+  z-index: 40;
+  width: calc(100% - 40px);
+  max-width: 520px;
+}
+.search-suggestions ul {
+  list-style: none;
+  margin: 0;
+  padding: 0.35rem 0;
+}
+.search-suggestions li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.75rem;
+  cursor: pointer;
+}
+.search-suggestions li:hover { background: #fbfdff }
+.search-suggestions .suggest-text { flex: 1; }
+.search-suggestions .suggest-type { font-size: 0.75rem; color: #6b7280 }
+
+.home-empty {
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.home-footer {
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.home-footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.home-footer-links {
+  min-width: 160px;
+}
+
+.home-social-links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* Inline messages for borrow form (success / error) */
+.borrow-message {
+  margin-top: 0.6rem;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.9rem;
+  border: 1px solid transparent;
+}
+.borrow-message.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+.borrow-message.success {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
+}
+
+/* Active borrows list inside borrow form */
+.active-borrows h4 {
+  margin: 0;
+  font-weight: 600;
+}
+.active-borrows-list li {
+  padding: 0.4rem 0;
+  border-bottom: 1px dashed #eef2f7;
+}
+.active-borrows-list li:last-child {
+  border-bottom: none;
+}
+
+/* Modal overlay and modal box for forms */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  padding: 1rem;
+}
+.modal {
+  background: #fff;
+  max-width: 740px;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 20px 40px rgba(2,6,23,0.35);
+  border-radius: 6px;
+}
+.modal h3 { margin: 0 0 0.5rem; }
+.modal .form-group label { font-weight: 600; margin-bottom: 0.25rem; display:block }
+
+/* Admin books list polishing */
+.admin-books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+.admin-book-card {
+  padding: 0.75rem;
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(15,23,42,0.05);
+}
+.admin-book-card h4 { margin: 0 0 0.25rem; font-size: 1rem }
+.admin-book-card p { margin: 0; color: #6b7280; font-size: 0.9rem }
+
+/* Borrow table tweaks */
+.admin-borrows-table th, .admin-borrows-table td { vertical-align: middle }
+.admin-borrows-table td { padding-right: 0.5rem }
+
+/* Mobile / small-screen responsive rules */
+@media (max-width: 600px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .app-header nav {
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+  }
+
+  .app-header h1 {
+    font-size: 1.05rem;
+  }
+
+  .app-main {
+    padding: 0.75rem 1rem;
+  }
+
+  .card {
+    padding: 0.75rem;
+  }
+
+  .home-hero {
+    grid-template-columns: 1fr;
+    height: auto;
+    background-position: center 30%;
+  }
+
+  .home-hero-text {
+    padding-right: 0;
+  }
+
+  .home-search {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .home-search input {
+    padding: 0.6rem 0.7rem;
+    border-radius: 0;
+  }
+
+  .home-search .btn {
+    width: 100%;
+  }
+
+  .home-hero-stat-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.75rem;
+  }
+
+  .home-books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
+
+  .admin-tabs {
+    gap: 0.4rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-borrows-table thead {
+    display: none; /* collapse header on tiny screens to save space */
+  }
+
+  .admin-borrows-table tbody tr {
+    display: block;
+    margin-bottom: 0.75rem;
+    background: #fff;
+    padding: 0.6rem;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.04);
+  }
+
+  .admin-borrows-table td {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.35rem 0;
+    white-space: normal;
+  }
+
+  .admin-borrows-table td:first-child { margin-bottom: 0.3rem }
+
+  .modal {
+    max-width: 96%;
+    margin: 0 0.5rem;
+    padding: 0.9rem;
+    border-radius: 4px;
+  }
+
+  .modal .form-group input,
+  .modal .form-group textarea,
+  .modal select {
+    width: 100%;
+  }
+
+  .modal .btn {
+    width: 100%;
+  }
+
+  .active-borrows-list li {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .borrow-message {
+    font-size: 0.92rem;
+  }
+}
+
+.home-social-links a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.home-footer-copy {
+  margin-top: 0.75rem;
+}
+
+/* Book card */
+.book-card {
+  background: #ffffff;
+  border-radius: 0.9rem;
+  padding: 0.75rem;
+  box-shadow: 0 14px 30px -18px rgba(15, 23, 42, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, translate 0.18s ease;
+}
+
+.book-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px -22px rgba(15, 23, 42, 0.6);
+}
+
+.book-card-cover {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  height: 170px;
+}
+
+.book-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.book-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #dbeafe, #e5e7eb);
+  color: #1e3a8a;
+  font-weight: 600;
+  font-size: 1.4rem;
+}
+
+.book-card-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+}
+
+.book-card-body h4 {
+  margin: 0.2rem 0;
+  font-size: 1rem;
+}
+
+.book-card-author {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.book-card-desc {
+  margin: 0.4rem 0 0;
+  font-size: 0.85rem;
+  color: #4b5563;
+  max-height: 3.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book-card-footer {
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 900px) {
+  .app-main {
+    padding: 1.2rem 1rem;
+  }
+
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .app-header nav {
+    flex-wrap: wrap;
+  }
+
+  .home-search {
+    flex-direction: column;
+  }
+}
+
+/* Auth layouts */
+.auth-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1.4fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.auth-hero {
+  border-radius: 0.9rem;
+  padding: 1.75rem 1.5rem;
+  background: linear-gradient(135deg, #111827, #1f2937);
+  color: #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-hero h2 {
+  margin: 0 0 0.5rem;
+}
+
+.auth-hero p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #d1d5db;
+}
+
+.auth-hero-footer {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.auth-card {
+  max-width: 440px;
+  margin-left: auto;
+}
+
+@media (max-width: 900px) {
+  .auth-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .auth-card {
+    margin: 0;
+  }
+}
+
+/* Admin layout */
+.admin-grid {
+  display: grid;
+  /* stack admin panels vertically (manage + list) */
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .admin-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* (Removed large global border-radius override.) */
