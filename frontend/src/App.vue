@@ -22,6 +22,7 @@
     </header>
     <main class="app-main">
       <router-view />
+      <ChatBot />
     </main>
   </div>
 </template>
@@ -30,6 +31,7 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { isAuthenticated as authIsAuthenticated, isAdmin as authIsAdmin, getUser } from './utils/auth';
+import ChatBot from './components/ChatBot.vue';
 
 const router = useRouter();
 

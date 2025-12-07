@@ -19,38 +19,67 @@ const calculateLateFee = (dueDate, returnedAt) => {
   return daysLate * LATE_FEE_PER_DAY;
 };
 
+// controllers/borrow.controller.js - cập nhật hàm borrowBook
 exports.borrowBook = async (req, res) => {
   try {
     const userId = req.user._id;
-    const { bookId } = req.body;
+    const { bookId, expectedReturnDate, notes } = req.body;
 
+    // Tìm sách
     const book = await Book.findById(bookId);
-    if (!book || book.quantity <= 0) {
-      return res.status(400).json({ message: 'Book not available' });
+    if (!book) {
+      return res.status(404).json({ message: 'Không tìm thấy sách' });
     }
 
-    const activeCount = await Borrow.countDocuments({
+    // Kiểm tra xem user đã có yêu cầu chờ duyệt cho sách này chưa
+    const existingPending = await Borrow.findOne({
       user: userId,
+      book: bookId,
+      status: 'approval'
+    });
+    
+    if (existingPending) {
+      return res.status(400).json({ 
+        message: 'Bạn đã có yêu cầu mượn sách này đang chờ duyệt' 
+      });
+    }
+
+    // Kiểm tra xem user đã mượn sách này chưa
+    const existingBorrowed = await Borrow.findOne({
+      user: userId,
+      book: bookId,
       status: 'borrowed'
     });
-    if (activeCount >= MAX_ACTIVE_BORROWS) {
-      return res.status(400).json({ message: 'Borrowing limit reached' });
+    
+    if (existingBorrowed) {
+      return res.status(400).json({ 
+        message: 'Bạn đang mượn sách này' 
+      });
     }
 
-    const dueDate = calculateDueDate();
+    // Tạo yêu cầu mượn với trạng thái approval
     const borrow = await Borrow.create({
       user: userId,
       book: bookId,
-      dueDate
+      dueDate: expectedReturnDate || calculateDueDate(),
+      status: 'approval',  // Mặc định là chờ duyệt
+      notes: notes || ''
     });
 
-    book.quantity -= 1;
-    book.borrowedCount += 1;
-    await book.save();
+    // Populate thông tin để trả về
+    const populatedBorrow = await Borrow.findById(borrow._id)
+      .populate('user', 'name email')
+      .populate('book', 'title author quantity');
 
-    return res.status(201).json(borrow);
+    return res.status(201).json({
+      message: 'Yêu cầu mượn sách đã được gửi thành công và đang chờ duyệt',
+      data: populatedBorrow
+    });
   } catch (err) {
-    return res.status(500).json({ message: 'Failed to borrow book', error: err.message });
+    return res.status(500).json({ 
+      message: 'Không thể gửi yêu cầu mượn sách', 
+      error: err.message 
+    });
   }
 };
 

@@ -69,56 +69,10 @@
         <button
           class="btn btn-primary"
           style="margin-bottom: 0.75rem"
-          @click="toggleBookForm"
+          @click="openBookFormModal"
         >
-          {{ showBookForm ? "Ẩn biểu mẫu" : "Thêm sách mới" }}
+          Thêm sách mới
         </button>
-
-        <form v-if="showBookForm" @submit.prevent="saveBook">
-          <div class="form-group">
-            <label>Title</label>
-            <input v-model="bookForm.title" required />
-          </div>
-          <div class="form-group">
-            <label>Author</label>
-            <input v-model="bookForm.author" required />
-          </div>
-          <div class="form-group">
-            <label>Genre</label>
-            <input v-model="bookForm.genre" />
-          </div>
-          <div class="form-group">
-            <label>Year</label>
-            <input v-model.number="bookForm.year" type="number" />
-          </div>
-          <div class="form-group">
-            <label>Quantity</label>
-            <input v-model.number="bookForm.quantity" type="number" min="0" />
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea v-model="bookForm.description" rows="3" />
-          </div>
-          <div class="form-group">
-            <label>Ảnh bìa (từ máy tính)</label>
-            <input type="file" accept="image/*" @change="onCoverSelected" />
-          </div>
-          <button class="btn btn-primary" :disabled="savingBook">
-            {{ bookForm._id ? "Cập nhật sách" : "Thêm sách" }}
-          </button>
-          <button
-            v-if="bookForm._id"
-            type="button"
-            class="btn btn-secondary"
-            style="margin-left: 0.5rem"
-            @click="resetBookForm"
-          >
-            Hủy
-          </button>
-          <p v-if="bookError" style="color: #b91c1c; margin-top: 0.5rem">
-            {{ bookError }}
-          </p>
-        </form>
       </div>
 
       <div class="card">
@@ -200,45 +154,70 @@
           <input v-model="borrowQuery" placeholder="Tìm theo tên người mượn hoặc tên sách" style="padding:0.45rem 0.6rem; border:1px solid #d1d5db;" />
           <select v-model="borrowStatusFilter" style="padding:0.45rem 0.6rem; border:1px solid #d1d5db;">
             <option value="">Tất cả trạng thái</option>
-            <option value="borrowed">borrowed</option>
-            <option value="returned">returned</option>
-            <option value="overdue">overdue</option>
-          </select>
+            <option value="approval">Chờ duyệt</option>
+            <option value="borrowed">Đang mượn</option>
+            <option value="returned">Đã trả</option>
+            <option value="overdue">Quá hạn</option>
+        </select>
           <button class="btn btn-secondary" @click="clearBorrowFilters">Xóa bộ lọc</button>
         </div>
 
-        <table class="table admin-borrows-table">
-          <thead>
-            <tr>
-              <th>Người mượn</th>
-              <th>Sách</th>
-              <th>Ngày mượn</th>
-              <th>Hạn trả</th>
-              <th>Trạng thái</th>
-              <th>Tiền phạt</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="b in filteredBorrows" :key="b._id">
-              <td>{{ b.user?.name }}<div style="font-size:0.8rem;color:#6b7280">{{ b.user?.email }}</div></td>
-              <td style="max-width:260px">{{ b.book?.title }}</td>
-              <td>{{ formatDate(b.createdAt || b.borrowedAt || b._id) }}</td>
-              <td>{{ formatDate(b.dueDate) }}</td>
-              <td>
-                <span class="badge" :class="{
-                  'badge-success': b.status === 'returned',
-                  'badge-warning': b.status === 'borrowed',
-                  'badge-danger': b.status === 'overdue'
-                }">{{ b.status }}</span>
-              </td>
-              <td>{{ b.lateFee || 0 }}</td>
-              <td style="white-space:nowrap">
-                <button class="btn btn-primary" @click="openEditBorrowModal(b)">Chỉnh sửa</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <!-- Thêm trong phần bảng quản lý mượn trả -->
+<table class="table admin-borrows-table">
+  <thead>
+    <tr>
+      <th>Người mượn</th>
+      <th>Sách</th>
+      <th>Ngày yêu cầu</th>
+      <th>Hạn trả dự kiến</th>
+      <th>Trạng thái</th>
+      <th>Ghi chú</th>
+      <th>Hành động</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="b in filteredBorrows" :key="b._id">
+      <td>{{ b.user?.name }}<div style="font-size:0.8rem;color:#6b7280">{{ b.user?.email }}</div></td>
+      <td style="max-width:260px">{{ b.book?.title }}</td>
+      <td>{{ formatDate(b.createdAt) }}</td>
+      <td>{{ formatDate(b.dueDate) }}</td>
+      <td>
+        <span class="badge" :class="{
+          'badge-success': b.status === 'returned',
+          'badge-warning': b.status === 'borrowed',
+          'badge-danger': b.status === 'overdue',
+          'badge-info': b.status === 'approval'
+        }">{{ getStatusText(b.status) }}</span>
+      </td>
+      <td>{{ b.notes || '-' }}</td>
+      <td style="white-space:nowrap">
+        <template v-if="b.status === 'approval'">
+          <button 
+            class="btn btn-success" 
+            @click="approveBorrow(b)"
+            style="background: #16a34a; margin-right: 0.25rem;"
+          >
+            Duyệt
+          </button>
+          <button 
+            class="btn btn-danger" 
+            @click="rejectBorrow(b)"
+            style="background: #dc2626;"
+          >
+            Từ chối
+          </button>
+        </template>
+        <button 
+          v-else 
+          class="btn btn-primary" 
+          @click="openEditBorrowModal(b)"
+        >
+          Chỉnh sửa
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
       </div>
 
       <!-- Edit Borrow Modal -->
@@ -250,9 +229,10 @@
           <div class="form-group">
             <label>Trạng thái</label>
             <select v-model="editingBorrow._newStatus">
-              <option value="borrowed">borrowed</option>
-              <option value="returned">returned</option>
-              <option value="overdue">overdue</option>
+              <option value="approval">Chờ duyệt</option>
+              <option value="borrowed">Đang mượn</option>
+              <option value="returned">Đã trả</option>
+              <option value="overdue">Quá hạn</option>
             </select>
           </div>
           <div style="display:flex; gap:0.5rem; justify-content:flex-end; margin-top:0.75rem">
@@ -280,6 +260,58 @@
           <strong>{{ topBorrowedBook?.title || "Chưa có dữ liệu" }}</strong>
         </li>
       </ul>
+    </div>
+
+    <!-- Book Form Modal -->
+    <div v-if="showBookFormModal" class="modal-overlay" @click.self="closeBookFormModal">
+      <div class="modal">
+        <h3>{{ bookForm._id ? "Chỉnh sửa sách" : "Thêm sách mới" }}</h3>
+        <p style="margin: 0 0 0.75rem; font-size: 0.9rem; color: #6b7280">
+          {{ bookForm._id ? "Cập nhật thông tin sách trong thư viện." : "Thêm sách mới vào thư viện." }}
+        </p>
+        
+        <form @submit.prevent="saveBook">
+          <div class="form-group">
+            <label>Tiêu đề</label>
+            <input v-model="bookForm.title" required />
+          </div>
+          <div class="form-group">
+            <label>Tác giả</label>
+            <input v-model="bookForm.author" required />
+          </div>
+          <div class="form-group">
+            <label>Thể loại</label>
+            <input v-model="bookForm.genre" />
+          </div>
+          <div class="form-group">
+            <label>Năm xuất bản</label>
+            <input v-model.number="bookForm.year" type="number" />
+          </div>
+          <div class="form-group">
+            <label>Số lượng</label>
+            <input v-model.number="bookForm.quantity" type="number" min="0" />
+          </div>
+          <div class="form-group">
+            <label>Mô tả</label>
+            <textarea v-model="bookForm.description" rows="3" />
+          </div>
+          <div class="form-group">
+            <label>Ảnh bìa (từ máy tính)</label>
+            <input type="file" accept="image/*" @change="onCoverSelected" />
+          </div>
+          <div style="display: flex; gap: 0.5rem; justify-content: flex-end; margin-top: 1rem">
+            <button type="button" class="btn btn-secondary" @click="closeBookFormModal">
+              Hủy
+            </button>
+            <button class="btn btn-primary" :disabled="savingBook">
+              {{ bookForm._id ? "Cập nhật sách" : "Thêm sách" }}
+            </button>
+          </div>
+          <p v-if="bookError" style="color: #b91c1c; margin-top: 0.5rem">
+            {{ bookError }}
+          </p>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -313,7 +345,7 @@ const categoryStats = ref({
 const books = ref([]);
 const savingBook = ref(false);
 const bookError = ref("");
-const showBookForm = ref(false);
+const showBookFormModal = ref(false);
 const coverFile = ref(null);
 const currentPage = ref(1);
 const pageSize = 10;
@@ -339,11 +371,14 @@ const loadBooks = async () => {
   }
 };
 
-const toggleBookForm = () => {
-  showBookForm.value = !showBookForm.value;
-  if (!showBookForm.value) {
-    resetBookForm();
-  }
+const openBookFormModal = () => {
+  resetBookForm();
+  showBookFormModal.value = true;
+};
+
+const closeBookFormModal = () => {
+  showBookFormModal.value = false;
+  resetBookForm();
 };
 
 const resetBookForm = () => {
@@ -390,7 +425,7 @@ const saveBook = async () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
     }
-    resetBookForm();
+    closeBookFormModal();
     await loadBooks();
   } catch (e) {
     bookError.value = e.response?.data?.message || "Failed to save book";
@@ -401,7 +436,7 @@ const saveBook = async () => {
 
 const editBook = (b) => {
   bookForm.value = { ...b };
-  showBookForm.value = true;
+  showBookFormModal.value = true;
 };
 
 const removeBook = async (id) => {
@@ -526,6 +561,80 @@ const formatDate = (val) => {
   }
 };
 
+
+
+// Thêm hàm duyệt yêu cầu mượn sách
+
+
+// Thêm hàm từ chối yêu cầu mượn sách
+
+// Thêm các hàm xử lý
+const getStatusText = (status) => {
+  const statusMap = {
+    'approval': 'Chờ duyệt',
+    'borrowed': 'Đang mượn',
+    'returned': 'Đã trả',
+    'overdue': 'Quá hạn'
+  };
+  return statusMap[status] || status;
+};
+
+// Hàm duyệt yêu cầu mượn
+const approveBorrow = async (borrow) => {
+  if (!confirm(`Duyệt yêu cầu mượn sách "${borrow.book?.title}" cho ${borrow.user?.name}?`)) return;
+  
+  try {
+    // Kiểm tra số lượng sách còn lại
+    const bookResponse = await api.get(`/books/${borrow.book._id}`);
+    const book = bookResponse.data;
+    
+    if (book.quantity <= 0) {
+      alert('Sách này đã hết trong kho. Không thể duyệt yêu cầu mượn.');
+      return;
+    }
+    
+    // Gọi API duyệt yêu cầu
+    const { data } = await api.put(`/borrow/${borrow._id}/approve`);
+    
+    // Cập nhật local state
+    const idx = borrowsAdmin.value.findIndex(x => x._id === data._id);
+    if (idx !== -1) {
+      borrowsAdmin.value.splice(idx, 1, { 
+        ...data, 
+        _newStatus: data.status,
+        book: { ...borrow.book, quantity: book.quantity - 1 }
+      });
+    }
+    
+    alert('✅ Đã duyệt yêu cầu mượn sách thành công!');
+  } catch (e) {
+    console.error('Error approving borrow:', e);
+    alert(e.response?.data?.message || 'Không thể duyệt yêu cầu mượn sách');
+  }
+};
+
+// Hàm từ chối yêu cầu mượn
+const rejectBorrow = async (borrow) => {
+  const reason = prompt(`Nhập lý do từ chối yêu cầu mượn sách "${borrow.book?.title}" của ${borrow.user?.name}:`, '');
+  if (reason === null) return; // Người dùng nhấn Cancel
+  
+  try {
+    // Gọi API từ chối yêu cầu
+    await api.put(`/borrow/${borrow._id}/reject`, { reason });
+    
+    // Cập nhật local state (chuyển sang trạng thái khác hoặc xóa)
+    const idx = borrowsAdmin.value.findIndex(x => x._id === borrow._id);
+    if (idx !== -1) {
+      // Bạn có thể chọn xóa khỏi danh sách hoặc đánh dấu là bị từ chối
+      borrowsAdmin.value.splice(idx, 1);
+    }
+    
+    alert('✅ Đã từ chối yêu cầu mượn sách');
+  } catch (e) {
+    console.error('Error rejecting borrow:', e);
+    alert(e.response?.data?.message || 'Không thể từ chối yêu cầu mượn sách');
+  }
+};
 onMounted(() => {
   loadBooks();
   loadStats();
@@ -680,4 +789,49 @@ onMounted(() => {
 .items-center {
   align-items: center;
 }
+
+/* Modal Overlay Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+/* Thêm style cho badge-info */
+.badge-info {
+  background: #0ea5e9;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Cập nhật các badge khác nếu cần */
+.badge-success { background: #16a34a; }
+.badge-warning { background: #ca8a04; }
+.badge-danger { background: #dc2626; }
 </style>

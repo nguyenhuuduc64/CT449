@@ -1,0 +1,60 @@
+# Tạo file .gitignore trong thư mục hiện tại
+@"
+# Node modules
+node_modules/
+frontend/node_modules/
+
+# Environment variables
+.env
+frontend/.env
+.env.local
+.env.*.local
+
+# Uploads directory
+uploads/
+
+# Lock files
+package-lock.json
+frontend/package-lock.json
+yarn.lock
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+out/
+
+# Database files
+*.db
+*.sqlite
+
+# Diagram files
+*.mdj
+Untitled.mdj
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Gemini API cache
+.gemini-cache/
+"@ | Out-File -FilePath .gitignore -Encoding UTF8
+
+# Kiểm tra file đã tạo
+Get-Content .gitignore

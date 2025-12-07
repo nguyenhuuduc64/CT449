@@ -57,7 +57,7 @@ body {
 }
 
 .app-main {
-  padding: 1.5rem 2rem;
+  padding: 0 2rem;
 }
 
 .card {
@@ -558,7 +558,7 @@ body {
   }
 
   .app-main {
-    padding: 0.75rem 1rem;
+    padding: 0 1rem;
   }
 
   .card {
@@ -744,7 +744,7 @@ body {
 
 @media (max-width: 900px) {
   .app-main {
-    padding: 1.2rem 1rem;
+    padding: 0 1rem;
   }
 
   .home-hero {

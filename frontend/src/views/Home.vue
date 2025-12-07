@@ -304,7 +304,7 @@ const confirmBorrow = async () => {
   try {
     await api.post("/borrow/borrow", { bookId: selectedBook.value._id, borrowDate: borrowDateISO.value, dueDate: dueDateISO.value });
     await loadBooks();
-    borrowMessage.value = 'Mượn sách thành công!';
+    borrowMessage.value = 'Đang chờ duyệt';
     borrowMessageType.value = 'success';
     // refresh active borrows so user sees updated list
     await loadActiveBorrows();
